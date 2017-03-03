@@ -13,12 +13,14 @@ class VkNewsLoader(PythonNewsLoader):
     __current_index = -1
     __start_from = None
     current_post = None
+    current_post_text = None
 
     def clear_cache(self):
         self.__posts = []
         self.__current_index = -1
         self.__start_from = None
         self.current_post = None
+        self.current_post_text = None
 
     def update_news(self):
         self.__get_posts()
@@ -32,24 +34,14 @@ class VkNewsLoader(PythonNewsLoader):
                     self.__get_posts()
 
             self.__current_index += 1
-            self.current_post = self.__posts[self.__current_index]
+            current_post = self.__posts[self.__current_index]
+            self.current_post = current_post
+            self.current_post_text = get_post_and_ancestors_text(current_post)
             if is_text_contains_python_news(self.current_post['text']):
                 return True
 
     def get_current_article_datetime(self):
         return datetime.datetime.fromtimestamp(self.current_post['date'])
-
-    def get_current_article_info(self):
-        post = self.current_post
-        article_info = dict()
-        text = get_post_and_ancestors_text(post)
-        article_info['title'], not_used, article_info['description'] = \
-                                                            text.partition('\n')
-        if len(article_info['description']) > 100:
-            article_info['description'] = article_info['description'][:100] + '...'
-        article_info['link'] = generate_link_by_owner_and_id(post['owner_id'],
-                                                             post['id'])
-        return article_info
 
     def __get_posts(self):
         params_of_request = {
@@ -63,6 +55,20 @@ class VkNewsLoader(PythonNewsLoader):
         self.__posts = vk_response['items']
         self.__start_from = vk_response.get('next_from', None)
         self.__current_index = -1
+
+    def get_current_article_title(self):
+        return self.current_post_text.partition('\n')[0]
+
+    def get_current_article_description(self):
+        description = self.current_post_text.partition('\n')[2]
+        if len(description) > 100:
+            return description[:100] + '...'
+        else:
+            return description
+
+    def get_current_article_link(self):
+        return generate_link_by_owner_and_id(self.current_post['owner_id'],
+                                             self.current_post['id'])
 
 
 def generate_link_by_owner_and_id(owner_id, id):

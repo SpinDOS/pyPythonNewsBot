@@ -25,12 +25,15 @@ class LinuxOrgNewsLoader(PythonNewsHtmlLoader):
         datetime_string = article_time_html['datetime'].partition('.')[0]
         return datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S')
 
-    def get_current_article_info(self):
-        current_article = self.current_article_html
-        article_info = dict()
-        article_info['title'] = decode_html(current_article.h2.a.string)
-        article_body_html = current_article.find("div", {"class": "msg"})
+    def get_current_article_title(self):
+        return decode_html(self.current_article_html.h2.a.string)
+
+    def get_current_article_description(self):
+        article_body_html = self.current_article_html.find("div", {"class": "msg"})
         article_descriptors = article_body_html.find_all("p")
-        article_info['description'] = decode_html(article_descriptors[0])
-        article_info['link'] = article_descriptors[-1].a['href']
-        return article_info
+        return decode_html(article_descriptors[0])
+
+    def get_current_article_link(self):
+        article_body_html = self.current_article_html.find("div", {"class": "msg"})
+        article_descriptors = article_body_html.find_all("p")
+        return article_descriptors[-1].a['href']

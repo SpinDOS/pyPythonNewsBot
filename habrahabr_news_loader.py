@@ -30,14 +30,16 @@ class HabraHabrNewsLoader(PythonNewsHtmlLoader):
         return get_date_from_string(date_and_time[0]) + \
                get_time_from_string(date_and_time[1])
 
-    def get_current_article_info(self):
-        article = self.current_article_html
-        article_info = dict()
-        title_link = article.find("a", {"class": "post__title_link"})
-        article_info['title'] = decode_html(title_link)
-        article_info['description'] = decode_html(article.find("div", {"class": "post__body"}).div)
-        article_info['link'] = title_link['href']
-        return article_info
+    def get_current_article_title(self):
+        title_link = self.current_article_html.find("a", {"class": "post__title_link"})
+        return decode_html(title_link)
+
+    def get_current_article_description(self):
+        return decode_html(self.current_article_html.find("div", {"class": "post__body"}).div)
+
+    def get_current_article_link(self):
+        title_link = self.current_article_html.find("a", {"class": "post__title_link"})
+        return title_link['href']
 
 
 def month_string_to_int(month):

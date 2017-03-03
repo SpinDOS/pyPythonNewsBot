@@ -35,12 +35,12 @@ class TProgerNewsLoader(PythonNewsHtmlLoader):
         datetime_string = article_time_string['datetime'].partition('+')[0]
         return datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S')
 
-    def get_current_article_info(self):
-        current_article = self.current_article_html
-        article_info = dict()
-        article_info['title'] = decode_html(current_article.find("span", {"class": "entry-title-heading"}))
-        article_info['description'] = decode_html(current_article.
-                                                  find("div", {"class": "entry-content"}))
-        article_info['link'] = current_article.find("h2", {"class": "entry-title"}).a['href']
-        return article_info
+    def get_current_article_title(self):
+        return decode_html(self.current_article_html.find("span", {"class": "entry-title-heading"}))
+
+    def get_current_article_description(self):
+        return decode_html(self.current_article_html.find("div", {"class": "entry-content"}))
+
+    def get_current_article_link(self):
+        return self.current_article_html.find("h2", {"class": "entry-title"}).a['href']
 

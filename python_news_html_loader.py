@@ -53,5 +53,13 @@ class PythonNewsHtmlLoader(PythonNewsLoader):
         pass
 
     @abstractmethod
-    def get_current_article_info(self):
+    def get_current_article_title(self):
+        pass
+
+    @abstractmethod
+    def get_current_article_description(self):
+        pass
+
+    @abstractmethod
+    def get_current_article_link(self):
         pass

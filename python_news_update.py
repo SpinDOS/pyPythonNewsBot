@@ -1,6 +1,6 @@
 import sys
 import time
-from db_manager import DbManager
+from python_news_db_manager import PythonNewsDbManager
 from python_news_update_manager import PythonNewsUpdateManager
 from habrahabr_news_loader import HabraHabrNewsLoader
 from linux_org_news_loader import LinuxOrgNewsLoader
@@ -32,7 +32,7 @@ def print_help():
 
 
 def update_news(auto_mode, db_filename):
-    news_manager = configure_manager(DbManager(db_filename))
+    news_manager = configure_manager(PythonNewsDbManager(db_filename))
     if not auto_mode:
         news_manager.update_news()
         print("Done!")
