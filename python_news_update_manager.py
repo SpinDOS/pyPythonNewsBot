@@ -7,7 +7,7 @@ class PythonNewsUpdateManager:
     __db_manager = None
     __log_manager = None
 
-    def __init__(self, db_manager, log_manager):
+    def __init__(self, db_manager, log_manager=None):
         self.__db_manager = db_manager
         self.__log_manager = log_manager
 
@@ -19,14 +19,16 @@ class PythonNewsUpdateManager:
             try:
                 news_from_loader = news_loader.get_news(last_update_time)
             except Exception as e:
-                self.__log_manager.log_message('Error occurred in loader %s: %s' %
+                if self.__log_manager:
+                    self.__log_manager.log_message('Error occurred in loader %s: %s' %
                                                (str(news_loader.__class__.__name__),
                                                 str(e)))
                 continue
 
             for news in news_from_loader:
                 yield news
-            self.__log_manager.log_message('Got news from ' +
+            if self.__log_manager:
+                self.__log_manager.log_message('Got news from ' +
                                            str(news_loader.__class__.__name__))
 
     def __get_actual_news(self, db, last_news_update_time):

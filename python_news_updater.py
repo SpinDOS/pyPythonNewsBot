@@ -28,7 +28,7 @@ def print_help():
     print("-auto parameter makes program to stay "
           "in memory and update news every 3 hours")
     print("Environment variable VK_API_KEY allow you "
-          "to specify access token for vk.com")
+          "to specify access token for vk.com (https://vk.com/dev/access_token)")
 
 
 def update_news(auto_mode, db_filename):
@@ -49,12 +49,13 @@ def update_news(auto_mode, db_filename):
 if __name__ == '__main__':
     if '--help' in sys.argv:
         print_help()
-    auto_mode = False
-    if '--auto' in sys.argv:
-        auto_mode = True
-        sys.argv.remove('-auto')
-    if len(sys.argv) > 2:
-        print_help()
     else:
-        db_filename = sys.argv[1] if len(sys.argv) == 2 else 'python_news_db.json'
-        update_news(auto_mode, db_filename)
+        auto_mode = False
+        if '--auto' in sys.argv:
+            auto_mode = True
+            sys.argv.remove('-auto')
+        if len(sys.argv) > 2:
+            print_help()
+        else:
+            db_filename = sys.argv[1] if len(sys.argv) == 2 else 'python_news_db.json'
+            update_news(auto_mode, db_filename)
