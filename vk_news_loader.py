@@ -59,7 +59,7 @@ class VkNewsLoader(PythonNewsLoader):
         }
         if self.__start_from:
             params_of_request['start_from'] = self.__start_from
-        vk_response = make_vk_api_request(self.SEARCH_METHOD, params_of_request)['response']
+        vk_response = make_vk_api_request(self.SEARCH_METHOD, params_of_request)
         self.__posts = vk_response['items']
         self.__start_from = vk_response.get('next_from', None)
         self.__current_index = -1
@@ -79,7 +79,7 @@ def get_post_and_ancestors_text(post):
             'posts': '%s_%s' % (prev_post_info['owner_id'], prev_post_info['id']),
             'copy_history_depth': 0
         }
-        prev_post = make_vk_api_request('wall.getById', params)['response'][0]
+        prev_post = make_vk_api_request('wall.getById', params)[0]
         text = '%s\n%s' % (text, prev_post['text'])
     return text
 

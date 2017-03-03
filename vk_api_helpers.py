@@ -15,4 +15,7 @@ def make_vk_api_request(method, extra_params=None):
     else:
         url_params = urlencode(api_params)
     url = 'https://api.vk.com/method/%s?%s' % (method, url_params)
-    return requests.get(url).json()
+    vk_response = requests.get(url).json()
+    if 'error' in vk_response:
+        raise Exception(vk_response['error'])
+    return vk_response['response']
