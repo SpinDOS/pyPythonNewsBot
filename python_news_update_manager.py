@@ -1,33 +1,33 @@
-import os
-import json
 import datetime
 
 
 class PythonNewsUpdateManager:
     __DATETIMEFORMAT = '%Y-%m-%d %H:%M:%S'
-    __db_file_path = ''
     __news_loaders = []
+    __db_manager = None
+    __log_manager = None
 
-    def __init__(self, db_file_path):
-        self.__db_file_path = db_file_path
-
-    def __load_db_from_file(self):
-        if not os.path.exists(self.__db_file_path):
-            return []
-        with open(self.__db_file_path, 'r') as db_file:
-            return json.load(db_file)
-
-    def __save_db_to_file(self, db):
-        with open(self.__db_file_path, 'w') as db_file:
-            json.dump(db, db_file)
+    def __init__(self, db_manager, log_manager):
+        self.__db_manager = db_manager
+        self.__log_manager = log_manager
 
     def add_news_loader(self, news_loader):
         self.__news_loaders.append(news_loader)
 
     def __get_news_from_loaders(self, last_update_time):
         for news_loader in self.__news_loaders:
-            for news in news_loader.get_news(last_update_time):
+            try:
+                news_from_loader = news_loader.get_news(last_update_time)
+            except Exception as e:
+                self.__log_manager.log_message('Error occurred in loader %s: %s' %
+                                               (str(news_loader.__class__.__name__),
+                                                str(e)))
+                continue
+
+            for news in news_from_loader:
                 yield news
+            self.__log_manager.log_message('Got news from ' +
+                                           str(news_loader.__class__.__name__))
 
     def __get_actual_news(self, db, last_news_update_time):
         actual_news = []
@@ -41,7 +41,7 @@ class PythonNewsUpdateManager:
         return actual_news
 
     def update_news(self):
-        db = self.__load_db_from_file()
+        db = self.__db_manager.load_db_from_file() or []
         if len(db):
             last_update_time = datetime.datetime.strptime\
                 (db[0]['update_time'], self.__DATETIMEFORMAT)
@@ -56,7 +56,7 @@ class PythonNewsUpdateManager:
             db = [{'update_time': datetime_now_string, 'news': actual_news}] + db
         elif db:
             db[0]['update_time'] = datetime_now_string
-        self.__save_db_to_file(db)
+        self.__db_manager.save_db_to_file(db)
 
 
 def are_news_similar(news1, news2):
