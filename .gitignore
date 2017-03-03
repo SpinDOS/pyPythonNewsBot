@@ -90,3 +90,4 @@ ENV/
 
 .idea/
 __pycache__/
+python_news_db.json
