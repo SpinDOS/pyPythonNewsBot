@@ -2,7 +2,7 @@ import datetime
 
 
 class PythonNewsUpdateManager:
-    __DATETIMEFORMAT = '%Y-%m-%d %H:%M:%S'
+    DATETIMEFORMAT = '%Y-%m-%d %H:%M:%S'
     __news_loaders = []
     __db_manager = None
     __log_manager = None
@@ -46,12 +46,12 @@ class PythonNewsUpdateManager:
         db = self.__db_manager.load_db_from_file() or []
         if len(db):
             last_update_time = datetime.datetime.strptime\
-                (db[0]['update_time'], self.__DATETIMEFORMAT)
+                (db[0]['update_time'], self.DATETIMEFORMAT)
         else:
             last_update_time = datetime.datetime.today()\
                 .replace(hour=0, minute=0, second=0, microsecond=0) - datetime.timedelta(days=1)
 
-        datetime_now_string = datetime.datetime.now().strftime(self.__DATETIMEFORMAT)
+        datetime_now_string = datetime.datetime.now().strftime(self.DATETIMEFORMAT)
         actual_news = self.__get_actual_news(db, last_update_time)
 
         if actual_news:
