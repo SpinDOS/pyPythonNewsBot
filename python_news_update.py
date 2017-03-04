@@ -34,14 +34,14 @@ def print_help():
 def update_news_with_console_output(auto_mode, db_filename):
     news_manager = configure_update_manager(PythonNewsDbManager(db_filename))
     if not auto_mode:
-        news_manager.update_news()
+        news_manager.update_news_in_db()
         print("Done!")
         return
 
     print("News manager will update news every 3 hours. Press Ctrl+C to exit")
     three_hours_in_seconds = 3 * 60 * 60
     while True:
-        news_manager.update_news()
+        news_manager.update_news_in_db()
         print(time.strftime("%H:%M:%S", time.localtime()) + ": python news updated")
         time.sleep(three_hours_in_seconds)
 

@@ -38,7 +38,7 @@ class PythonNewsUpdateManager:
             else:
                 db.append(loaded_news)
 
-    def update_news(self):
+    def update_news_in_db(self):
         db = self.__db_manager.load_db_from_file() or []
         if db:
             last_update_time = max(news['datetime'] for news in db)
