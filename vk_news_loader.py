@@ -60,11 +60,7 @@ class VkNewsLoader(PythonNewsLoader):
         return self.current_post_text.partition('\n')[0]
 
     def get_current_article_description(self):
-        description = self.current_post_text.partition('\n')[2]
-        if len(description) > 100:
-            return description[:100] + '...'
-        else:
-            return description
+        return self.current_post_text.partition('\n')[2]
 
     def get_current_article_link(self):
         return generate_link_by_owner_and_id(self.current_post['owner_id'],

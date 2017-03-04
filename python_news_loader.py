@@ -35,7 +35,13 @@ class PythonNewsLoader(ABC):
     def __get_current_article_info(self):
         article_info = dict()
         article_info['title'] = self.get_current_article_title()
-        article_info['description'] = self.get_current_article_description()
+        description = self.get_current_article_description()
+        max_description_length = 100
+        if len(description) > max_description_length:
+            article_info['description'] = \
+                description[:max_description_length] + '...'
+        else:
+            article_info['description'] = description
         article_info['link'] = self.get_current_article_link()
         return article_info
 
