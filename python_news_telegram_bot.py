@@ -8,7 +8,7 @@ import sys
 import datetime
 import random
 from python_news_db_manager import PythonNewsDbManager
-from python_news_update import configure_update_manager
+import python_news_update
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -41,71 +41,89 @@ def run_telegram_bot(telegram_token):
     updater.idle()
 
 
-def remove_old_news_from_lists(date_of_old_news):
+def remove_old_news_from_list(date_of_oldest_news):
     for news in actual_news:
-        if news['datetime'] < date_of_old_news:
+        if news['datetime'] < date_of_oldest_news:
             actual_news.remove(news)
-    for news in used_news:
-        if news['datetime'] < date_of_old_news:
-            used_news.remove(news)
+
+
+def is_actual_news_contains_news(news_to_check):
+    for news in actual_news:
+        news_copy = news.copy()
+        news_copy.pop('people', None)
+        if news_to_check == news_copy:
+            return True
+    return False
 
 
 def update_news_in_lists_from_db(oldest_news_date):
     for news in db_manager.load_db_from_file() or []:
         if news['datetime'] >= oldest_news_date and \
-                        news not in actual_news + used_news:
+                not is_actual_news_contains_news(news):
+            news['people'] = []
             actual_news.append(news)
 
 
-def update_actual_news():
+def get_stored_actual_news_for_user(user_id):
+    return [news for news in actual_news
+            if user_id not in news['people']]
+
+
+def get_actual_news_for_user(user_id):
     day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
-    remove_old_news_from_lists(day_ago)
-    if actual_news:
-        return
-    news_update_manager = configure_update_manager(db_manager, None)
-    news_update_manager.update_news()
+    remove_old_news_from_list(day_ago)
+    actual_news_for_user = get_stored_actual_news_for_user(user_id)
+    if actual_news_for_user:
+        return actual_news_for_user
+    news_update_manager.update_news_in_db()
     update_news_in_lists_from_db(day_ago)
+    return get_stored_actual_news_for_user(user_id)
 
 
-def choose_random_news():
-    random_index = random.randint(0, len(actual_news) - 1)
-    news = actual_news.pop(random_index)
-    used_news.append(news)
+def choose_random_news(actual_news_for_user, user_id):
+    random_index = random.randint(0, len(actual_news_for_user) - 1)
+    news = actual_news_for_user[random_index]
+    news['people'].append(user_id)
     return news
 
 
 def configure_message(news):
     return '%s \n%s \nSource: %s' % (news['title'], news['description'],
-                                      news['link'])
+                                     news['link'])
 
 
 def python_news(bot, update):
     while sync_block[0]:
         pass
     sync_block[0] = 1
-    update_actual_news()
-    if not actual_news:
+    user_id = update['message']['chat']['id']
+    actual_news_for_user = get_actual_news_for_user(user_id)
+    if not actual_news_for_user:
         update.message.reply_text('Sorry, no actual news available. Try later')
-        sync_block[0] = 0
-        return
-    message = configure_message(choose_random_news())
-    update.message.reply_text(message)
+    else:
+        news = choose_random_news(actual_news_for_user, user_id)
+        message = configure_message(news)
+        update.message.reply_text(message)
     sync_block[0] = 0
+
 
 sync_block = [0]
 actual_news = []
-used_news = []
 db_manager = None
+news_update_manager = None
 
 
 if __name__ == '__main__':
-    db_filename = sys.argv[1] if len(sys.argv) == 2 else 'python_news_db.json'
-    db_manager = PythonNewsDbManager(db_filename)
-    telegram_api_token = os.environ.get('TELEGRAM_API_TOKEN')
-    telegram_api_token = '301168706:AAFe-xdTCXgnubduBH7xZ4l4YT9VoYranQ0'
-    if telegram_api_token:
-        print("Working...")
-        run_telegram_bot(telegram_api_token)
+    if len(sys.argv) > 2:
+        print("Usage: python python_news_telegram_bot.py <news_db_file_path>")
     else:
-        print("Set telegram api token for your bot (contact BotFather on Telegram) "
-              "as an environment variable TELEGRAM_API_TOKEN")
+        db_filename = sys.argv[1] if len(sys.argv) == 2 else 'python_news_db.json'
+        db_manager = PythonNewsDbManager(db_filename)
+        news_update_manager = python_news_update.configure_update_manager(db_manager, None)
+        telegram_api_token = os.environ.get('TELEGRAM_API_TOKEN')
+        if telegram_api_token:
+            print("Working... Press Ctrl+C to stop")
+            run_telegram_bot(telegram_api_token)
+        else:
+            print("Set telegram api token for your bot (contact BotFather on Telegram) "
+                  "as an environment variable TELEGRAM_API_TOKEN")
