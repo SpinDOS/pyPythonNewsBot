@@ -14,8 +14,8 @@ class ConsoleLogger(object):
         print(message)
 
 
-def configure_manager(db_manager):
-    manager = PythonNewsUpdateManager(db_manager, ConsoleLogger())
+def configure_update_manager(db_manager, logger=ConsoleLogger()):
+    manager = PythonNewsUpdateManager(db_manager, logger)
     manager.add_news_loader(HabraHabrNewsLoader())
     manager.add_news_loader(LinuxOrgNewsLoader())
     manager.add_news_loader(TProgerNewsLoader())
@@ -31,8 +31,8 @@ def print_help():
           "to specify access token for vk.com (https://vk.com/dev/access_token)")
 
 
-def update_news(auto_mode, db_filename):
-    news_manager = configure_manager(PythonNewsDbManager(db_filename))
+def update_news_with_console_output(auto_mode, db_filename):
+    news_manager = configure_update_manager(PythonNewsDbManager(db_filename))
     if not auto_mode:
         news_manager.update_news()
         print("Done!")
@@ -58,4 +58,4 @@ if __name__ == '__main__':
             print_help()
         else:
             db_filename = sys.argv[1] if len(sys.argv) == 2 else 'python_news_db.json'
-            update_news(auto_mode, db_filename)
+            update_news_with_console_output(auto_mode, db_filename)
