@@ -7,6 +7,7 @@ import os
 import sys
 import datetime
 import random
+import time
 from python_news_db_manager import PythonNewsDbManager
 import python_news_update
 
@@ -56,12 +57,22 @@ def is_actual_news_contains_news(news_to_check):
     return False
 
 
+db_update_sync_block = [False]
+
+
 def update_news_in_lists_from_db(oldest_news_date):
+    if db_update_sync_block[0]:
+        while db_update_sync_block[0]:
+            time.sleep(1)
+        return
+
+    db_update_sync_block[0] = True
     for news in db_manager.load_db_from_file() or []:
         if news['datetime'] >= oldest_news_date and \
                 not is_actual_news_contains_news(news):
             news['people'] = []
             actual_news.append(news)
+    db_update_sync_block[0] = False
 
 
 def get_stored_actual_news_for_user(user_id):
@@ -93,10 +104,10 @@ def configure_message(news):
 
 
 def python_news(bot, update):
-    while sync_block[0]:
-        pass
-    sync_block[0] = 1
     user_id = update['message']['chat']['id']
+    while user_id in sync_block:
+        time.sleep(1)
+    sync_block.append(user_id)
     actual_news_for_user = get_actual_news_for_user(user_id)
     if not actual_news_for_user:
         update.message.reply_text('Sorry, no actual news available. Try later')
@@ -104,10 +115,10 @@ def python_news(bot, update):
         news = choose_random_news(actual_news_for_user, user_id)
         message = configure_message(news)
         update.message.reply_text(message)
-    sync_block[0] = 0
+    sync_block.remove(user_id)
 
 
-sync_block = [0]
+sync_block = []
 actual_news = []
 db_manager = None
 news_update_manager = None
