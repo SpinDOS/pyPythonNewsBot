@@ -32,17 +32,17 @@ class PythonNewsLoader(ABC):
     def get_current_article_link(self):
         pass
 
-    def __get_current_article_info(self):
+    def _get_current_article_info(self):
         article_info = dict()
-        article_info['title'] = self.get_current_article_title()
-        description = self.get_current_article_description()
+        article_info['title'] = self.get_current_article_title() or 'No Title'
+        description = self.get_current_article_description() or 'No description'
         max_description_length = 100
         if len(description) > max_description_length:
             article_info['description'] = \
                 description[:max_description_length] + '...'
         else:
             article_info['description'] = description
-        article_info['link'] = self.get_current_article_link()
+        article_info['link'] = self.get_current_article_link() or 'No link'
         return article_info
 
     def get_news(self, datetime_of_latest_article = datetime.datetime.today().
@@ -53,7 +53,7 @@ class PythonNewsLoader(ABC):
             current_article_datetime = self.get_current_article_datetime()
             if current_article_datetime < datetime_of_latest_article:
                 break
-            current_article_info = self.__get_current_article_info()
+            current_article_info = self._get_current_article_info()
             current_article_info['datetime'] = current_article_datetime
             articles.append(current_article_info)
         self.clear_cache()

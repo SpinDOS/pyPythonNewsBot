@@ -2,36 +2,36 @@ import datetime
 
 
 class PythonNewsUpdateManager:
-    __news_loaders = []
-    __db_manager = None
-    __log_manager = None
+    _news_loaders = []
+    _db_manager = None
+    _log_manager = None
 
     def __init__(self, db_manager, log_manager=None):
-        self.__db_manager = db_manager
-        self.__log_manager = log_manager
+        self._db_manager = db_manager
+        self._log_manager = log_manager
 
     def add_news_loader(self, news_loader):
-        self.__news_loaders.append(news_loader)
+        self._news_loaders.append(news_loader)
 
-    def __get_news_from_loaders(self, last_update_time):
-        for news_loader in self.__news_loaders:
+    def _get_news_from_loaders(self, last_update_time):
+        for news_loader in self._news_loaders:
             try:
                 news_from_loader = news_loader.get_news(last_update_time)
             except Exception as e:
-                if self.__log_manager:
-                    self.__log_manager.log_message('Error occurred in loader %s: %s' %
-                                               (str(news_loader.__class__.__name__),
+                if self._log_manager:
+                    self._log_manager.log_message('Error occurred in loader %s: %s' %
+                                                  (str(news_loader.__class__.__name__),
                                                 str(e)))
                 continue
 
             for news in news_from_loader:
                 yield news
-            if self.__log_manager:
-                self.__log_manager.log_message('Got news from ' +
-                                           str(news_loader.__class__.__name__))
+            if self._log_manager:
+                self._log_manager.log_message('Got news from ' +
+                                              str(news_loader.__class__.__name__))
 
-    def __get_actual_news(self, db, last_news_update_time):
-        for loaded_news in self.__get_news_from_loaders(last_news_update_time):
+    def _get_actual_news(self, db, last_news_update_time):
+        for loaded_news in self._get_news_from_loaders(last_news_update_time):
             for stored_news in db:
                 if are_news_similar(loaded_news, stored_news):
                     break
@@ -39,7 +39,7 @@ class PythonNewsUpdateManager:
                 db.append(loaded_news)
 
     def update_news_in_db(self):
-        db = self.__db_manager.load_db_from_file() or []
+        db = self._db_manager.load_db_from_file() or []
         if db:
             last_update_time = max(news['datetime'] for news in db)
         else:
@@ -47,8 +47,8 @@ class PythonNewsUpdateManager:
                 .replace(hour=0, minute=0, second=0, microsecond=0) \
                 - datetime.timedelta(days=1)
 
-        self.__get_actual_news(db, last_update_time)
-        self.__db_manager.save_db_to_file(db)
+        self._get_actual_news(db, last_update_time)
+        self._db_manager.save_db_to_file(db)
 
 
 def are_news_similar(news1, news2):

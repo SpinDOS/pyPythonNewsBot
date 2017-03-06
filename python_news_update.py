@@ -23,7 +23,7 @@ def configure_update_manager(db_manager, logger=ConsoleLogger()):
     return manager
 
 
-def print_help():
+def _print_help():
     print("Usage: python python_news_updater.py [db_filename] [--auto]")
     print("-auto parameter makes program to stay "
           "in memory and update news every 3 hours")
@@ -48,14 +48,14 @@ def update_news_with_console_output(auto_mode, db_filename):
 
 if __name__ == '__main__':
     if '--help' in sys.argv:
-        print_help()
+        _print_help()
     else:
         auto_mode = False
         if '--auto' in sys.argv:
             auto_mode = True
             sys.argv.remove('-auto')
         if len(sys.argv) > 2:
-            print_help()
+            _print_help()
         else:
             db_filename = sys.argv[1] if len(sys.argv) == 2 else 'python_news_db.json'
             update_news_with_console_output(auto_mode, db_filename)

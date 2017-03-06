@@ -43,7 +43,7 @@ def run_telegram_bot(telegram_token):
 
 
 def is_actual_news_contains_news(news_to_check):
-    for news in actual_news:
+    for news in _actual_news:
         news_copy = news.copy()
         news_copy.pop('people', None)
         if news_to_check == news_copy:
@@ -52,33 +52,33 @@ def is_actual_news_contains_news(news_to_check):
 
 
 def remove_old_news_from_list(date_of_oldest_news):
-    if db_and_list_sync_blocks[1]:
-        while db_and_list_sync_blocks[1]:
+    if _db_and_list_sync_blocks[1]:
+        while _db_and_list_sync_blocks[1]:
             time.sleep(1)
         return
-    db_and_list_sync_blocks[1] = True
-    for news in actual_news:
+    _db_and_list_sync_blocks[1] = True
+    for news in _actual_news:
         if news['datetime'] < date_of_oldest_news:
-            actual_news.remove(news)
-    db_and_list_sync_blocks[1] = False
+            _actual_news.remove(news)
+    _db_and_list_sync_blocks[1] = False
 
 
 def update_news_in_lists_from_db(oldest_news_date):
-    if db_and_list_sync_blocks[0]:
-        while db_and_list_sync_blocks[0]:
+    if _db_and_list_sync_blocks[0]:
+        while _db_and_list_sync_blocks[0]:
             time.sleep(1)
         return
-    db_and_list_sync_blocks[0] = True
-    for news in db_manager.load_db_from_file() or []:
+    _db_and_list_sync_blocks[0] = True
+    for news in _db_manager.load_db_from_file() or []:
         if news['datetime'] >= oldest_news_date and \
                 not is_actual_news_contains_news(news):
             news['people'] = []
-            actual_news.append(news)
-    db_and_list_sync_blocks[0] = False
+            _actual_news.append(news)
+    _db_and_list_sync_blocks[0] = False
 
 
 def get_stored_actual_news_for_user(user_id):
-    return [news for news in actual_news
+    return [news for news in _actual_news
             if user_id not in news['people']]
 
 
@@ -88,7 +88,7 @@ def get_actual_news_for_user(user_id):
     actual_news_for_user = get_stored_actual_news_for_user(user_id)
     if actual_news_for_user:
         return actual_news_for_user
-    news_update_manager.update_news_in_db()
+    _news_update_manager.update_news_in_db()
     update_news_in_lists_from_db(day_ago)
     return get_stored_actual_news_for_user(user_id)
 
@@ -107,9 +107,9 @@ def configure_message(news):
 
 def python_news(bot, update):
     user_id = update['message']['chat']['id']
-    while user_id in users_sync_blocks:
+    while user_id in _users_sync_blocks:
         time.sleep(1)
-    users_sync_blocks.append(user_id)
+    _users_sync_blocks.append(user_id)
     actual_news_for_user = get_actual_news_for_user(user_id)
     if not actual_news_for_user:
         update.message.reply_text('Sorry, no actual news available. Try later')
@@ -117,13 +117,13 @@ def python_news(bot, update):
         news = choose_random_news(actual_news_for_user, user_id)
         message = configure_message(news)
         update.message.reply_text(message)
-    users_sync_blocks.remove(user_id)
+    _users_sync_blocks.remove(user_id)
 
-db_and_list_sync_blocks = [False, False]
-users_sync_blocks = []
-actual_news = []
-db_manager = None
-news_update_manager = None
+_db_and_list_sync_blocks = [False, False]
+_users_sync_blocks = []
+_actual_news = []
+_db_manager = None
+_news_update_manager = None
 
 
 if __name__ == '__main__':
@@ -131,8 +131,8 @@ if __name__ == '__main__':
         print("Usage: python python_news_telegram_bot.py <news_db_file_path>")
     else:
         db_filename = sys.argv[1] if len(sys.argv) == 2 else 'python_news_db.json'
-        db_manager = PythonNewsDbManager(db_filename)
-        news_update_manager = python_news_update.configure_update_manager(db_manager, None)
+        _db_manager = PythonNewsDbManager(db_filename)
+        _news_update_manager = python_news_update.configure_update_manager(_db_manager, None)
         telegram_api_token = os.environ.get('TELEGRAM_API_TOKEN')
         if telegram_api_token:
             print("Working... Press Ctrl+C to stop")

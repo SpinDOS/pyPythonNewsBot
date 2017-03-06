@@ -4,16 +4,15 @@ import datetime
 
 
 class PythonNewsDbManager:
-    __DATETIMEFORMAT = '%Y-%m-%d %H:%M:%S'
-    __db_file_path = ''
+    _db_file_path = ''
 
     def __init__(self, db_file_path):
-        self.__db_file_path = db_file_path
+        self._db_file_path = db_file_path
 
     def load_db_from_file(self):
-        if not os.path.exists(self.__db_file_path):
+        if not os.path.exists(self._db_file_path):
             return None
-        with open(self.__db_file_path, 'r') as db_file:
+        with open(self._db_file_path, 'r') as db_file:
             db = json.load(db_file)
         for news in db:
             news['datetime'] = \
@@ -25,5 +24,5 @@ class PythonNewsDbManager:
         for news in db[:]:
             news['datetime'] = (news['datetime'] - utc_datetime_start)\
                 .total_seconds()
-        with open(self.__db_file_path, 'w') as db_file:
+        with open(self._db_file_path, 'w') as db_file:
             json.dump(db, db_file)
