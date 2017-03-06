@@ -1,6 +1,7 @@
-from python_news_loader import PythonNewsLoader
-from vk_api_helpers import make_vk_api_request
 import datetime
+
+from helper_methods.vk_api_helpers import make_vk_api_request
+from python_news_loaders.python_news_loader import PythonNewsLoader
 
 
 class VkNewsLoader(PythonNewsLoader):

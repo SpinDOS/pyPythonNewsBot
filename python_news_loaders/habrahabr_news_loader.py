@@ -1,7 +1,9 @@
-import bs4
 import datetime
-from html_decode_helpers import decode_html
-from python_news_html_loader import PythonNewsHtmlLoader
+
+import bs4
+
+from helper_methods.html_decode_helpers import decode_html
+from python_news_loaders.python_news_html_loader import PythonNewsHtmlLoader
 
 
 class HabraHabrNewsLoader(PythonNewsHtmlLoader):

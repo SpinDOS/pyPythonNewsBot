@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+import datetime
 import logging
 import os
-import sys
-import datetime
 import random
+import sys
 import time
-from python_news_db_manager import PythonNewsDbManager
+
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+
 import python_news_update
+from python_news_update_managers.python_news_db_manager import PythonNewsDbManager
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',

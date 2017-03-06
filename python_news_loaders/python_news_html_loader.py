@@ -1,6 +1,8 @@
 from abc import abstractmethod
+
 import requests
-from python_news_loader import PythonNewsLoader
+
+from python_news_loaders.python_news_loader import PythonNewsLoader
 
 
 class PythonNewsHtmlLoader(PythonNewsLoader):

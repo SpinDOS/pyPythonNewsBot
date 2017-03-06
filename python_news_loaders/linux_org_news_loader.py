@@ -1,7 +1,9 @@
-from python_news_html_loader import PythonNewsHtmlLoader
-from html_decode_helpers import decode_html
 import datetime
+
 import bs4
+
+from helper_methods.html_decode_helpers import decode_html
+from python_news_loaders.python_news_html_loader import PythonNewsHtmlLoader
 
 
 class LinuxOrgNewsLoader(PythonNewsHtmlLoader):

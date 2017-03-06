@@ -1,9 +1,11 @@
-from python_news_html_loader import PythonNewsHtmlLoader
-from html_decode_helpers import decode_html
-import bs4
-import re
-import requests
 import datetime
+import re
+
+import bs4
+import requests
+
+from helper_methods.html_decode_helpers import decode_html
+from python_news_loaders.python_news_html_loader import PythonNewsHtmlLoader
 
 
 class TProgerNewsLoader(PythonNewsHtmlLoader):

@@ -1,11 +1,13 @@
 import sys
 import time
-from python_news_db_manager import PythonNewsDbManager
-from python_news_update_manager import PythonNewsUpdateManager
-from habrahabr_news_loader import HabraHabrNewsLoader
-from linux_org_news_loader import LinuxOrgNewsLoader
-from tproger_news_loader import TProgerNewsLoader
-from vk_news_loader import VkNewsLoader
+
+from python_news_update_managers.python_news_update_manager import PythonNewsUpdateManager
+from python_news_loaders.tproger_news_loader import TProgerNewsLoader
+from python_news_loaders.vk_news_loader import VkNewsLoader
+
+from python_news_loaders.habrahabr_news_loader import HabraHabrNewsLoader
+from python_news_loaders.linux_org_news_loader import LinuxOrgNewsLoader
+from python_news_update_managers.python_news_db_manager import PythonNewsDbManager
 
 
 class ConsoleLogger(object):
