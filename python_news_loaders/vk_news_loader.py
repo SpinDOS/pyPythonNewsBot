@@ -38,7 +38,7 @@ class VkNewsLoader(PythonNewsLoader):
             current_post = self._posts[self._current_index]
             self.current_post = current_post
             self.current_post_text = _get_post_and_ancestors_text(current_post)
-            if _is_text_contains_python_news(self.current_post['text']):
+            if _is_text_contains_python_news(self.current_post_text):
                 return True
 
     def get_current_article_datetime(self):
@@ -93,11 +93,10 @@ def _is_text_contains_python_news(text):
         ['приглаш', 'обучени'],     # реклама курсов
         ['приглаш', 'курс'],        # по программированию
         ['курс программирования'],  # на питоне
-        ['кож', 'цвет'],    # одежда
-        ['кож', 'размер'],  # и обувь
-        ['кож', 'стил'],    # из кожи
-        ['одежд'],          # питона 
-        ['обув'],           # (змеи)
+        ['#кож'],   # одежда
+        ['#skin'],  # и обувь
+        ['одежд'],  # из кожи
+        ['обув'],   # питона (змеи)
         ['#snake'],  # просто новости про змей
         ['заказ', 'бесплатн'],  # услуги
         ['недорог'],            # по программированию
