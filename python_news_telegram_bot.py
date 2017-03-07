@@ -4,11 +4,12 @@
 import logging
 import os
 import sys
-import python_news_update
-from python_news_update_managers.python_news_db_manager import PythonNewsDbManager
-from unique_news_picker import UniqueNewsPicker
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+
+import python_news_update
+from python_news_managers.python_news_db_manager import PythonNewsDbManager
+from python_news_managers.unique_news_picker import UniqueNewsPicker
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
