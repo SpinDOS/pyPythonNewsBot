@@ -10,18 +10,15 @@ class VkNewsLoader(PythonNewsLoader):
     _SEARCH_WORD = '#python'
     _SEARCH_METHOD = 'newsfeed.search'
 
-    _posts = []
-    _current_index = -1
-    _start_from = None
-    current_post = None
-    current_post_text = None
-
-    def clear_cache(self):
+    def __init__(self):
         self._posts = []
         self._current_index = -1
         self._start_from = None
         self.current_post = None
         self.current_post_text = None
+
+    def clear_cache(self):
+        self.__init__()
 
     def update_news(self):
         self._get_posts()

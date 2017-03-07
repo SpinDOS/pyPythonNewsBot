@@ -4,7 +4,6 @@ import datetime
 
 
 class PythonNewsDbManager:
-    _db_file_path = ''
 
     def __init__(self, db_file_path):
         self._db_file_path = db_file_path

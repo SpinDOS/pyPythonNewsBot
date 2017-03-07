@@ -2,13 +2,11 @@ import datetime
 
 
 class PythonNewsUpdateManager:
-    _news_loaders = []
-    _db_manager = None
-    _log_manager = None
 
     def __init__(self, db_manager, log_manager=None):
         self._db_manager = db_manager
         self._log_manager = log_manager
+        self._news_loaders = []
 
     def add_news_loader(self, news_loader):
         self._news_loaders.append(news_loader)

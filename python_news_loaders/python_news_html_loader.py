@@ -7,14 +7,12 @@ from python_news_loaders.python_news_loader import PythonNewsLoader
 
 class PythonNewsHtmlLoader(PythonNewsLoader):
 
-    _site_url = ''
-    _html_articles_collection = []
-    _current_index = -1
-    _next_page_link = None
-    current_article_html = ''
-
     def __init__(self, html_site_url):
         self._site_url = html_site_url
+        self._html_articles_collection = []
+        self._current_index = -1
+        self._next_page_link = None
+        self.current_article_html = ''
 
     def update_news(self):
         self._get_articles_from_url(self._site_url)
